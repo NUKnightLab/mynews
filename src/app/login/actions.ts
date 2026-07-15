@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { getOrigin } from "@/lib/site-url";
 
 export type LoginState = {
   status: "idle" | "sent" | "error";
@@ -18,14 +17,15 @@ export async function sendMagicLink(
   }
 
   const supabase = await createClient();
-  const origin = await getOrigin();
 
   await supabase.auth.signInWithOtp({
     email,
     options: {
       // Invite-only: never create a new account from the login form.
       shouldCreateUser: false,
-      emailRedirectTo: `${origin}/auth/callback`,
+      // No emailRedirectTo: the custom magic-link template (see
+      // supabase/templates/magic-link.html) points at /auth/confirm
+      // directly via token_hash, not Supabase's ConfirmationURL.
     },
   });
 

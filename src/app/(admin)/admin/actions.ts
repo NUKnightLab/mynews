@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentProfile } from "@/lib/auth";
-import { getOrigin } from "@/lib/site-url";
 
 export type InviteState = {
   status: "idle" | "sent" | "error";
@@ -27,10 +26,11 @@ export async function inviteMember(
     return { status: "error", message: "Enter an email address." };
   }
 
-  const origin = await getOrigin();
   const admin = createAdminClient();
   const { error } = await admin.auth.admin.inviteUserByEmail(email, {
-    redirectTo: `${origin}/auth/callback`,
+    // No redirectTo: the custom invite template (see
+    // supabase/templates/invite.html) points at /auth/confirm directly
+    // via token_hash, not Supabase's ConfirmationURL.
     data: {
       role,
       group_id: requester.group_id,

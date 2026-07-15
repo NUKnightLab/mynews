@@ -236,23 +236,32 @@ otp_length = 6
 # Number of seconds before the email OTP expires (defaults to 1 hour).
 otp_expiry = 3600
 
-# Use a production-ready SMTP server
-# [auth.email.smtp]
-# enabled = true
-# host = "smtp.sendgrid.net"
-# port = 587
-# user = "apikey"
-# pass = "env(SENDGRID_API_KEY)"
-# admin_email = "admin@email.com"
-# sender_name = "Admin"
+# Gmail SMTP relay (see README.md "Email setup"). Any email account works
+# here - a custom domain is not required, just an App Password. This also
+# unblocks custom email templates below, which the free tier's default
+# mailer does not allow.
+[auth.email.smtp]
+enabled = true
+host = "smtp.gmail.com"
+port = 587
+user = "env(GMAIL_SMTP_USER)"
+pass = "env(GMAIL_SMTP_APP_PASSWORD)"
+admin_email = "env(GMAIL_SMTP_USER)"
+sender_name = "RSS Filter"
 
-# Custom templates require a custom SMTP provider or paid tier - free tier
-# blocks template modification with the default email provider. Using
-# Supabase's default templates + PKCE code-exchange callback instead (see
-# src/app/auth/callback/route.ts), which needs no template changes.
-# [auth.email.template.invite]
-# subject = "You have been invited"
-# content_path = "./supabase/templates/invite.html"
+# Custom templates point at our own /auth/confirm page (token_hash-based)
+# instead of Supabase's default ConfirmationURL, and require a real click
+# before the token is consumed - see src/app/auth/confirm/. This defeats
+# link-prefetching by institutional email security scanners (e.g.
+# Microsoft Defender Safe Links), which otherwise burn a single-use
+# magic-link/invite token before the recipient ever clicks it.
+[auth.email.template.invite]
+subject = "You've been invited to RSS Filter"
+content_path = "./supabase/templates/invite.html"
+
+[auth.email.template.magic_link]
+subject = "Sign in to RSS Filter"
+content_path = "./supabase/templates/magic-link.html"
 
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]
