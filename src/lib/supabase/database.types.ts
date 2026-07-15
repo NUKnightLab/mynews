@@ -57,6 +57,42 @@ export type Database = {
         }
         Relationships: []
       }
+      member_subscriptions: {
+        Row: {
+          created_at: string
+          id: string
+          profile_id: string
+          source_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          profile_id: string
+          source_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          profile_id?: string
+          source_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_subscriptions_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_subscriptions_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -91,6 +127,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      sources: {
+        Row: {
+          created_at: string
+          id: string
+          site_url: string | null
+          title: string | null
+          type: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          site_url?: string | null
+          title?: string | null
+          type?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          site_url?: string | null
+          title?: string | null
+          type?: string
+          url?: string
+        }
+        Relationships: []
       }
     }
     Views: {
