@@ -30,42 +30,43 @@ export async function addFeed(
     return { status: "error", message: "Feed URL must be http or https." };
   }
 
+  // Parse first, then dedupe on the *resolved* feed URL - not the raw
+  // input - so a member pasting a site's homepage and another member
+  // pasting that same site's direct feed URL both land on one source row
+  // (see parseFeedUrl's autodiscovery fallback in src/lib/feeds/parse.ts).
+  const parsed = await parseFeedUrl(url.toString()).catch(() => null);
+  if (!parsed) {
+    return {
+      status: "error",
+      message:
+        "Couldn't find an RSS/Atom feed at that URL, or linked from it.",
+    };
+  }
+
   const supabase = await createClient();
 
-  // Reuse an existing source row if this URL is already known (see
-  // supabase/migrations/20260715000001_feeds.sql for why sources are
-  // shared/deduped across members).
   const { data: existing } = await supabase
     .from("sources")
     .select("id")
-    .eq("url", url.toString())
+    .eq("url", parsed.feedUrl)
     .maybeSingle();
 
   let sourceId = existing?.id;
 
   if (!sourceId) {
-    const parsed = await parseFeedUrl(url.toString()).catch(() => null);
-    if (!parsed) {
-      return {
-        status: "error",
-        message:
-          "Couldn't read that as an RSS/Atom feed. Check the URL and try again.",
-      };
-    }
-
     const { data: inserted, error: insertError } = await supabase
       .from("sources")
-      .insert({ url: url.toString(), title: parsed.title, site_url: parsed.siteUrl })
+      .insert({ url: parsed.feedUrl, title: parsed.title, site_url: parsed.siteUrl })
       .select("id")
       .single();
 
     if (insertError) {
-      // Someone else added this exact URL between our check and insert.
+      // Someone else added this exact feed URL between our check and insert.
       if (insertError.code === "23505") {
         const { data: raceWinner } = await supabase
           .from("sources")
           .select("id")
-          .eq("url", url.toString())
+          .eq("url", parsed.feedUrl)
           .single();
         sourceId = raceWinner?.id;
       }
