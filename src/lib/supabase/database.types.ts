@@ -98,6 +98,45 @@ export type Database = {
           },
         ]
       }
+      member_source_affinity: {
+        Row: {
+          affinity: number
+          id: string
+          profile_id: string
+          source_id: string
+          updated_at: string
+        }
+        Insert: {
+          affinity?: number
+          id?: string
+          profile_id: string
+          source_id: string
+          updated_at?: string
+        }
+        Update: {
+          affinity?: number
+          id?: string
+          profile_id?: string
+          source_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_source_affinity_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_source_affinity_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       member_subscriptions: {
         Row: {
           created_at: string
@@ -130,6 +169,41 @@ export type Database = {
             columns: ["source_id"]
             isOneToOne: false
             referencedRelation: "sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      member_weights: {
+        Row: {
+          corroboration: number
+          popularity: number
+          profile_id: string
+          recency: number
+          source_diversity: number
+          updated_at: string
+        }
+        Insert: {
+          corroboration?: number
+          popularity?: number
+          profile_id: string
+          recency?: number
+          source_diversity?: number
+          updated_at?: string
+        }
+        Update: {
+          corroboration?: number
+          popularity?: number
+          profile_id?: string
+          recency?: number
+          source_diversity?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_weights_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -213,6 +287,13 @@ export type Database = {
         Returns: {
           display_name: string
           id: string
+        }[]
+      }
+      get_source_subscriber_counts: {
+        Args: never
+        Returns: {
+          source_id: string
+          subscriber_count: number
         }[]
       }
       is_admin: { Args: never; Returns: boolean }
