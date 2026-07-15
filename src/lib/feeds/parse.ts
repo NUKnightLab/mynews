@@ -2,6 +2,12 @@ import Parser from "rss-parser";
 
 const parser = new Parser({ timeout: 10_000 });
 
+// Used by the poller (Phase 3), which already has canonical feed URLs
+// from `sources.url` and needs the full item list, not just title/siteUrl.
+export async function fetchFeed(url: string) {
+  return parser.parseURL(url);
+}
+
 export type ParsedFeed = {
   title: string | null;
   siteUrl: string | null;

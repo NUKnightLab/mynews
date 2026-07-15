@@ -57,6 +57,47 @@ export type Database = {
         }
         Relationships: []
       }
+      items: {
+        Row: {
+          author: string | null
+          fetched_at: string
+          id: string
+          published_at: string | null
+          source_id: string
+          summary: string | null
+          title: string
+          url: string
+        }
+        Insert: {
+          author?: string | null
+          fetched_at?: string
+          id?: string
+          published_at?: string | null
+          source_id: string
+          summary?: string | null
+          title: string
+          url: string
+        }
+        Update: {
+          author?: string | null
+          fetched_at?: string
+          id?: string
+          published_at?: string | null
+          source_id?: string
+          summary?: string | null
+          title?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "items_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       member_subscriptions: {
         Row: {
           created_at: string
@@ -132,6 +173,8 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          last_poll_error: string | null
+          last_polled_at: string | null
           site_url: string | null
           title: string | null
           type: string
@@ -140,6 +183,8 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          last_poll_error?: string | null
+          last_polled_at?: string | null
           site_url?: string | null
           title?: string | null
           type?: string
@@ -148,6 +193,8 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          last_poll_error?: string | null
+          last_polled_at?: string | null
           site_url?: string | null
           title?: string | null
           type?: string
