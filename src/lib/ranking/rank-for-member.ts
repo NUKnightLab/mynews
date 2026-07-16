@@ -33,7 +33,7 @@ export async function rankForMember(
 
   const { data: itemRows } = await supabase
     .from("items")
-    .select("id, source_id, url, title, summary, author, published_at, fetched_at")
+    .select("id, source_id, url, title, summary, author, published_at, fetched_at, source:sources(title)")
     .in("source_id", sourceIds)
     .order("published_at", { ascending: false })
     .limit(MAX_ITEMS);
@@ -41,6 +41,7 @@ export async function rankForMember(
   const items: RankableItem[] = (itemRows ?? []).map((row) => ({
     id: row.id,
     sourceId: row.source_id,
+    sourceTitle: row.source?.title ?? null,
     url: row.url,
     title: row.title,
     summary: row.summary,

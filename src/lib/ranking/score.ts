@@ -32,6 +32,7 @@ export type MemberWeights = {
 export type RankableItem = {
   id: string;
   sourceId: string;
+  sourceTitle: string | null;
   url: string;
   title: string;
   summary: string | null;
