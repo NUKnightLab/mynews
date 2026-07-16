@@ -29,6 +29,11 @@ export default async function MemberLayout({
           <Link href="/members" className="underline">
             Other Members
           </Link>
+          {profile.role === "admin" && (
+            <Link href="/admin" className="underline">
+              Admin
+            </Link>
+          )}
         </nav>
         <span className="flex items-center gap-4">
           {profile.display_name}
