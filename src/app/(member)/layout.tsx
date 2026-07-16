@@ -26,6 +26,9 @@ export default async function MemberLayout({
           <Link href="/feed/settings" className="underline">
             Settings
           </Link>
+          <Link href="/members" className="underline">
+            Other Members
+          </Link>
         </nav>
         <span className="flex items-center gap-4">
           {profile.display_name}

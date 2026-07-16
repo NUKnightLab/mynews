@@ -25,7 +25,7 @@ export async function rankForMember(
       supabase.from("member_subscriptions").select("source_id").eq("profile_id", profileId),
       supabase.from("member_weights").select("*").eq("profile_id", profileId).maybeSingle(),
       supabase.from("member_source_affinity").select("source_id, affinity").eq("profile_id", profileId),
-      supabase.rpc("get_group_directory"),
+      supabase.rpc("get_group_directory", { p_profile_id: profileId }),
     ]);
 
   const sourceIds = (subscriptions ?? []).map((s) => s.source_id);
@@ -63,7 +63,9 @@ export async function rankForMember(
     (affinityRows ?? []).map((row) => [row.source_id, row.affinity]),
   );
 
-  const { data: subscriberCounts } = await supabase.rpc("get_source_subscriber_counts");
+  const { data: subscriberCounts } = await supabase.rpc("get_source_subscriber_counts", {
+    p_profile_id: profileId,
+  });
   const subscriberCountBySource = Object.fromEntries(
     (subscriberCounts ?? []).map((row) => [row.source_id, Number(row.subscriber_count)]),
   );

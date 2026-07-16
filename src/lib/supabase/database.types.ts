@@ -283,14 +283,14 @@ export type Database = {
     Functions: {
       current_group_id: { Args: never; Returns: string }
       get_group_directory: {
-        Args: never
+        Args: { p_profile_id?: string }
         Returns: {
           display_name: string
           id: string
         }[]
       }
       get_source_subscriber_counts: {
-        Args: never
+        Args: { p_profile_id?: string }
         Returns: {
           source_id: string
           subscriber_count: number
