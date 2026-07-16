@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth";
 import { WeightsForm } from "./weights-form";
-import { adjustReason } from "../actions";
+import { MoreLessButtons } from "../more-less-buttons";
 
 export default async function SettingsPage() {
   const profile = await getCurrentProfile();
@@ -52,35 +52,16 @@ export default async function SettingsPage() {
               row.source ? (
                 <li
                   key={row.source.id}
-                  className="flex items-center justify-between gap-3 border-b border-gray-100 pb-2"
+                  className="flex items-center gap-2 border-b border-gray-100 pb-2"
                 >
+                  <MoreLessButtons
+                    factor="source_affinity"
+                    label={`from ${row.source.title ?? row.source.url}`}
+                    sourceId={row.source.id}
+                  />
                   <span>{row.source.title || row.source.url}</span>
-                  <span className="flex shrink-0 items-center gap-2">
-                    <span className="text-xs text-gray-500">{row.affinity.toFixed(2)}</span>
-                    <form action={adjustReason}>
-                      <input type="hidden" name="factor" value="source_affinity" />
-                      <input type="hidden" name="direction" value="less" />
-                      <input type="hidden" name="sourceId" value={row.source.id} />
-                      <button
-                        type="submit"
-                        aria-label={`Less from ${row.source.title ?? row.source.url}`}
-                        className="rounded border border-gray-300 px-1.5 leading-none"
-                      >
-                        &minus;
-                      </button>
-                    </form>
-                    <form action={adjustReason}>
-                      <input type="hidden" name="factor" value="source_affinity" />
-                      <input type="hidden" name="direction" value="more" />
-                      <input type="hidden" name="sourceId" value={row.source.id} />
-                      <button
-                        type="submit"
-                        aria-label={`More from ${row.source.title ?? row.source.url}`}
-                        className="rounded border border-gray-300 px-1.5 leading-none"
-                      >
-                        +
-                      </button>
-                    </form>
+                  <span className="ml-auto text-xs text-gray-500">
+                    {row.affinity.toFixed(2)}
                   </span>
                 </li>
               ) : null,

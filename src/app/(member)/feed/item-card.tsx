@@ -2,49 +2,10 @@
 
 import { useState } from "react";
 import type { ScoredItem, ScoreReason } from "@/lib/ranking/score";
-import { adjustReason } from "./actions";
+import { MoreLessButtons } from "./more-less-buttons";
 
 // source_diversity deliberately excluded - see src/lib/ranking/weights.ts.
 const ACTIONABLE_FACTORS = new Set(["recency", "corroboration", "popularity", "source_affinity"]);
-
-function MoreLessButtons({
-  factor,
-  label,
-  sourceId,
-}: {
-  factor: string;
-  label: string;
-  sourceId: string;
-}) {
-  return (
-    <span className="flex shrink-0 gap-1">
-      <form action={adjustReason}>
-        <input type="hidden" name="factor" value={factor} />
-        <input type="hidden" name="direction" value="more" />
-        <input type="hidden" name="sourceId" value={sourceId} />
-        <button
-          type="submit"
-          aria-label={`More like this: ${label}`}
-          className="rounded border border-gray-300 px-1.5 leading-none"
-        >
-          +
-        </button>
-      </form>
-      <form action={adjustReason}>
-        <input type="hidden" name="factor" value={factor} />
-        <input type="hidden" name="direction" value="less" />
-        <input type="hidden" name="sourceId" value={sourceId} />
-        <button
-          type="submit"
-          aria-label={`Less like this: ${label}`}
-          className="rounded border border-gray-300 px-1.5 leading-none"
-        >
-          &minus;
-        </button>
-      </form>
-    </span>
-  );
-}
 
 export function ItemCard({ scored }: { scored: ScoredItem }) {
   const [expanded, setExpanded] = useState(false);
@@ -87,8 +48,7 @@ export function ItemCard({ scored }: { scored: ScoredItem }) {
       {expanded && (
         <ul className="mt-2 flex flex-col gap-2 rounded border border-gray-200 p-3 text-xs">
           {otherReasons.map((reason) => (
-            <li key={reason.factor} className="flex items-center justify-between gap-3">
-              <span>{reason.label}</span>
+            <li key={reason.factor} className="flex items-center gap-2">
               {ACTIONABLE_FACTORS.has(reason.factor) && (
                 <MoreLessButtons
                   factor={reason.factor}
@@ -96,15 +56,16 @@ export function ItemCard({ scored }: { scored: ScoredItem }) {
                   sourceId={item.sourceId}
                 />
               )}
+              <span>{reason.label}</span>
             </li>
           ))}
-          <li className="flex items-center justify-between gap-3">
-            <span>{sourceReason?.label ?? `From ${sourceLabel}`}</span>
+          <li className="flex items-center gap-2">
             <MoreLessButtons
               factor="source_affinity"
               label={`from ${sourceLabel}`}
               sourceId={item.sourceId}
             />
+            <span>{sourceReason?.label ?? `From ${sourceLabel}`}</span>
           </li>
         </ul>
       )}
