@@ -16,10 +16,10 @@ export default async function AdminLayout({
 
   return (
     <div className="flex flex-1 flex-col">
-      <header className="flex items-center justify-between border-b border-gray-200 p-4 text-sm">
+      <header className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-gray-200 p-4 text-sm">
         {/* Same order as the member nav (see (member)/layout.tsx) so
             Admin doesn't jump position when crossing between areas. */}
-        <nav className="flex items-center gap-4">
+        <nav className="flex flex-wrap items-center gap-x-4 gap-y-1">
           <NavLink href="/feed">Feed</NavLink>
           <NavLink href="/feed/sources">Sources</NavLink>
           <NavLink href="/feed/settings">Settings</NavLink>

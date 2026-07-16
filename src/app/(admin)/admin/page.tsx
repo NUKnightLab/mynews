@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { InviteForm } from "./invite-form";
 
 export default async function AdminDashboardPage() {
@@ -7,6 +8,12 @@ export default async function AdminDashboardPage() {
     .from("profiles")
     .select("id, display_name, role, created_at")
     .order("created_at", { ascending: true });
+
+  // Email lives on auth.users, not profiles - only readable via the
+  // service-role client.
+  const admin = createAdminClient();
+  const { data: usersData } = await admin.auth.admin.listUsers();
+  const emailById = new Map(usersData?.users.map((u) => [u.id, u.email ?? "—"]));
 
   return (
     <main className="flex flex-1 flex-col gap-8 p-8">
@@ -28,7 +35,8 @@ export default async function AdminDashboardPage() {
         <ul className="flex flex-col gap-1 text-sm">
           {roster?.map((member) => (
             <li key={member.id}>
-              {member.display_name} - {member.role}
+              {member.display_name} ({emailById.get(member.id) ?? "—"}) -{" "}
+              {member.role}
             </li>
           ))}
         </ul>
