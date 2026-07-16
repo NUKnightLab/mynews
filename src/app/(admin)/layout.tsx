@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/auth";
 import { signOut } from "@/app/actions";
+import { NavLink } from "@/components/nav-link";
 
 // Admin-only area (roster/invites, survey & diary instruments, retention
 // tooling).
@@ -17,22 +17,16 @@ export default async function AdminLayout({
   return (
     <div className="flex flex-1 flex-col">
       <header className="flex items-center justify-between border-b border-gray-200 p-4 text-sm">
+        {/* Same order as the member nav (see (member)/layout.tsx) so
+            Admin doesn't jump position when crossing between areas. */}
         <nav className="flex items-center gap-4">
-          <Link href="/admin" className="underline">
-            Admin
-          </Link>
-          <Link href="/feed" className="underline">
-            Feed
-          </Link>
-          <Link href="/feed/sources" className="underline">
-            Sources
-          </Link>
-          <Link href="/feed/settings" className="underline">
-            Settings
-          </Link>
-          <Link href="/members" className="underline">
+          <NavLink href="/feed">Feed</NavLink>
+          <NavLink href="/feed/sources">Sources</NavLink>
+          <NavLink href="/feed/settings">Settings</NavLink>
+          <NavLink href="/members" activeMatch="prefix">
             Other Members
-          </Link>
+          </NavLink>
+          <NavLink href="/admin">Admin</NavLink>
         </nav>
         <span className="flex items-center gap-4">
           {profile.display_name} (admin)

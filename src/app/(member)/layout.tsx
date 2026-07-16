@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/auth";
 import { signOut } from "@/app/actions";
+import { NavLink } from "@/components/nav-link";
 
 // Member-facing area (ranked feed, weight settings, cross-member viewing,
 // instrument responses).
@@ -17,23 +17,13 @@ export default async function MemberLayout({
     <div className="flex flex-1 flex-col">
       <header className="flex items-center justify-between border-b border-gray-200 p-4 text-sm">
         <nav className="flex items-center gap-4">
-          <Link href="/feed" className="underline">
-            Feed
-          </Link>
-          <Link href="/feed/sources" className="underline">
-            Sources
-          </Link>
-          <Link href="/feed/settings" className="underline">
-            Settings
-          </Link>
-          <Link href="/members" className="underline">
+          <NavLink href="/feed">Feed</NavLink>
+          <NavLink href="/feed/sources">Sources</NavLink>
+          <NavLink href="/feed/settings">Settings</NavLink>
+          <NavLink href="/members" activeMatch="prefix">
             Other Members
-          </Link>
-          {profile.role === "admin" && (
-            <Link href="/admin" className="underline">
-              Admin
-            </Link>
-          )}
+          </NavLink>
+          {profile.role === "admin" && <NavLink href="/admin">Admin</NavLink>}
         </nav>
         <span className="flex items-center gap-4">
           {profile.display_name}
