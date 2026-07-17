@@ -239,15 +239,13 @@ otp_expiry = 3600
 # Gmail SMTP relay (see README.md "Email setup"). Any email account works
 # here - a custom domain is not required, just an App Password. This also
 # unblocks custom email templates below, which the free tier's default
-# mailer does not allow.
+# mailer does not allow. Only set for the hosted project (see
+# [remotes.*] near the end of this file) - left disabled at the
+# top level so `supabase start` (local dev) falls back to its built-in
+# Mailpit capture instead of trying (and silently failing, since local
+# has no GMAIL_SMTP_* env vars) to relay through Gmail.
 [auth.email.smtp]
-enabled = true
-host = "smtp.gmail.com"
-port = 587
-user = "env(GMAIL_SMTP_USER)"
-pass = "env(GMAIL_SMTP_APP_PASSWORD)"
-admin_email = "env(GMAIL_SMTP_USER)"
-sender_name = "RSS Filter"
+enabled = false
 
 # Custom templates point at our own /auth/confirm page (token_hash-based)
 # instead of Supabase's default ConfirmationURL, and require a real click
@@ -427,3 +425,27 @@ enabled = true
 # declarative_schema_path = "./database"
 # JSON string passed through to pg-delta SQL formatting.
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":80,\"commaStyle\":\"trailing\"}"
+
+# Overrides applied only when `supabase config push` targets this specific
+# linked project (matched by project_id) - never affects `supabase start`
+# (local dev always uses the top-level values above). This is what lets
+# local dev and the hosted project have different site_url/SMTP without
+# two separate config files. See AGENTS.md and README.md "Local
+# development" for why local dev intentionally does NOT use these.
+[remotes.production]
+project_id = "gftmswtvdzhfwrpuxiwn"
+
+# Gmail SMTP relay (see README.md "Email setup"). Any email account works
+# here - a custom domain is not required, just an App Password. This also
+# unblocks custom email templates (auth.email.template.* above), which
+# the free tier's default mailer does not allow - and which local dev
+# doesn't need this override for, since it uses its own local Mailpit
+# capture regardless of the (disabled) top-level smtp block.
+[remotes.production.auth.email.smtp]
+enabled = true
+host = "smtp.gmail.com"
+port = 587
+user = "env(GMAIL_SMTP_USER)"
+pass = "env(GMAIL_SMTP_APP_PASSWORD)"
+admin_email = "env(GMAIL_SMTP_USER)"
+sender_name = "RSS Filter"
