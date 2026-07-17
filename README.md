@@ -36,6 +36,13 @@ app would have sent, instead of really sending it).
 
 ### Signing in locally
 
+A **fresh** local database (right after `supabase start` or `supabase db
+reset`) has exactly zero users in it. If you ever see accounts you didn't
+create, that's stale data from an earlier session (yours or someone
+else's) against this same local stack - not something the app seeds on
+purpose. `supabase db reset` wipes it back to genuinely empty if you want
+a clean slate.
+
 Since invites are always admin-issued (even the first one), and there's no
 admin yet on a fresh local database:
 
@@ -43,8 +50,15 @@ admin yet on a fresh local database:
    `http://127.0.0.1:54323`) → **Authentication → Users → Invite user** →
    enter your own email. The database trigger makes the **first person
    ever invited** an admin automatically.
-2. Open Mailpit (`MAILPIT_URL`, normally `http://127.0.0.1:54324`) - the
-   invite email is sitting there instead of in a real inbox.
+2. Open Mailpit (`MAILPIT_URL`, normally `http://127.0.0.1:54324`) and
+   find **that** invite - Mailpit keeps every message it has ever
+   captured, so if you (or anyone) has tested this before, older invite
+   emails will still be sitting there too. Clicking a stale one fails
+   (each invite link is single-use) and dumps you on the sign-in page
+   looking like something's broken, when really it's just the wrong
+   email. Sort by date/subject, or clear Mailpit out first if it's
+   cluttered (its UI has a delete-all action, or `curl -X DELETE
+   http://127.0.0.1:54324/api/v1/messages`).
 3. Click the "Accept invite" link in it. It points at
    `localhost:3001/auth/confirm?...`, so it lands you right in your local
    app. Every invite after the first one works the same way, and goes
