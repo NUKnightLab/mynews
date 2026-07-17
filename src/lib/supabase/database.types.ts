@@ -137,6 +137,45 @@ export type Database = {
           },
         ]
       }
+      member_source_tags: {
+        Row: {
+          created_at: string
+          id: string
+          profile_id: string
+          source_id: string
+          tag: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          profile_id: string
+          source_id: string
+          tag: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          profile_id?: string
+          source_id?: string
+          tag?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_source_tags_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "member_source_tags_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       member_subscriptions: {
         Row: {
           created_at: string
@@ -169,6 +208,38 @@ export type Database = {
             columns: ["source_id"]
             isOneToOne: false
             referencedRelation: "sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      member_tag_weights: {
+        Row: {
+          id: string
+          profile_id: string
+          tag: string
+          updated_at: string
+          weight: number
+        }
+        Insert: {
+          id?: string
+          profile_id: string
+          tag: string
+          updated_at?: string
+          weight?: number
+        }
+        Update: {
+          id?: string
+          profile_id?: string
+          tag?: string
+          updated_at?: string
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_tag_weights_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]

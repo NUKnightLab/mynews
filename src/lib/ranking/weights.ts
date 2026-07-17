@@ -101,3 +101,36 @@ export async function nudgeAffinity(
   const current = data?.affinity ?? 0;
   await setAffinity(client, profileId, sourceId, current + delta);
 }
+
+export async function setTagWeight(
+  client: Client,
+  profileId: string,
+  tag: string,
+  value: number,
+) {
+  await client.from("member_tag_weights").upsert(
+    {
+      profile_id: profileId,
+      tag,
+      weight: clamp(value, AFFINITY_MIN, AFFINITY_MAX),
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "profile_id,tag" },
+  );
+}
+
+export async function nudgeTagWeight(
+  client: Client,
+  profileId: string,
+  tag: string,
+  delta: number,
+) {
+  const { data } = await client
+    .from("member_tag_weights")
+    .select("weight")
+    .eq("profile_id", profileId)
+    .eq("tag", tag)
+    .maybeSingle();
+  const current = data?.weight ?? 0;
+  await setTagWeight(client, profileId, tag, current + delta);
+}

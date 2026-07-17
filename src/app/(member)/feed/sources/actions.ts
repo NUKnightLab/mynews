@@ -109,3 +109,36 @@ export async function removeFeed(formData: FormData) {
 
   revalidatePath("/feed");
 }
+
+// Tags are personal (like weights/affinity - see DESIGN_BRIEF.md §3),
+// normalized to lowercase/trimmed so "Climate" and "climate" don't
+// fragment into two separate tags in the ranking engine.
+export async function addSourceTag(formData: FormData) {
+  const profile = await getCurrentProfile();
+  if (!profile) return;
+
+  const sourceId = String(formData.get("sourceId") ?? "");
+  const tag = String(formData.get("tag") ?? "").trim().toLowerCase().slice(0, 40);
+  if (!sourceId || !tag) return;
+
+  const supabase = await createClient();
+  // Already tagged (unique violation) is a no-op, not an error.
+  await supabase.from("member_source_tags").insert({ profile_id: profile.id, source_id: sourceId, tag });
+
+  revalidatePath("/feed/sources");
+  revalidatePath("/feed");
+}
+
+export async function removeSourceTag(formData: FormData) {
+  const profile = await getCurrentProfile();
+  if (!profile) return;
+
+  const tagId = String(formData.get("tagId") ?? "");
+  if (!tagId) return;
+
+  const supabase = await createClient();
+  await supabase.from("member_source_tags").delete().eq("id", tagId).eq("profile_id", profile.id);
+
+  revalidatePath("/feed/sources");
+  revalidatePath("/feed");
+}

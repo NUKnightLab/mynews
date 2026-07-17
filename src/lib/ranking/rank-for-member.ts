@@ -20,13 +20,21 @@ export async function rankForMember(
   supabase: SupabaseClient<Database>,
   profileId: string,
 ): Promise<ScoredItem[]> {
-  const [{ data: subscriptions }, { data: weightsRow }, { data: affinityRows }, { data: directory }] =
-    await Promise.all([
-      supabase.from("member_subscriptions").select("source_id").eq("profile_id", profileId),
-      supabase.from("member_weights").select("*").eq("profile_id", profileId).maybeSingle(),
-      supabase.from("member_source_affinity").select("source_id, affinity").eq("profile_id", profileId),
-      supabase.rpc("get_group_directory", { p_profile_id: profileId }),
-    ]);
+  const [
+    { data: subscriptions },
+    { data: weightsRow },
+    { data: affinityRows },
+    { data: directory },
+    { data: sourceTagRows },
+    { data: tagWeightRows },
+  ] = await Promise.all([
+    supabase.from("member_subscriptions").select("source_id").eq("profile_id", profileId),
+    supabase.from("member_weights").select("*").eq("profile_id", profileId).maybeSingle(),
+    supabase.from("member_source_affinity").select("source_id, affinity").eq("profile_id", profileId),
+    supabase.rpc("get_group_directory", { p_profile_id: profileId }),
+    supabase.from("member_source_tags").select("source_id, tag").eq("profile_id", profileId),
+    supabase.from("member_tag_weights").select("tag, weight").eq("profile_id", profileId),
+  ]);
 
   const sourceIds = (subscriptions ?? []).map((s) => s.source_id);
   if (sourceIds.length === 0) return [];
@@ -73,11 +81,20 @@ export async function rankForMember(
   // "Other members" = the group directory minus me.
   const groupMemberCount = Math.max(0, (directory?.length ?? 1) - 1);
 
+  const sourceTags: Record<string, string[]> = {};
+  for (const row of sourceTagRows ?? []) {
+    (sourceTags[row.source_id] ??= []).push(row.tag);
+  }
+
+  const tagAffinity = Object.fromEntries((tagWeightRows ?? []).map((row) => [row.tag, row.weight]));
+
   return rankItems(items, {
     now: new Date(),
     weights,
     sourceAffinity,
     subscriberCountBySource,
     groupMemberCount,
+    sourceTags,
+    tagAffinity,
   });
 }

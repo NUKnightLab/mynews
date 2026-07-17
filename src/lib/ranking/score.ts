@@ -8,12 +8,16 @@ export type ScoreFactor =
   | "corroboration"
   | "popularity"
   | "source_affinity"
-  | "source_diversity";
+  | "source_diversity"
+  | "tag_affinity";
 
 export type ScoreReason = {
   factor: ScoreFactor;
   contribution: number;
   label: string;
+  // Only set for factor === "tag_affinity" - which specific tag this
+  // reason is about, since a source can carry more than one.
+  tag?: string;
 };
 
 export type ScoredItem = {
@@ -51,6 +55,11 @@ export type RankingContext = {
   subscriberCountBySource: Record<string, number>;
   // Other members in the group, for normalizing popularity into 0..1.
   groupMemberCount: number;
+  // sourceId -> this member's own tags on that source (personal, like
+  // affinity - see member_source_tags).
+  sourceTags: Record<string, string[]>;
+  // tag -> weight, from past more/less feedback on that tag. Absent = 0.
+  tagAffinity: Record<string, number>;
 };
 
 const RECENCY_HALF_LIFE_HOURS = 24;
@@ -114,6 +123,26 @@ function scoreItem(
         affinity > 0
           ? "You've asked for more from this source"
           : "You've asked for less from this source",
+    });
+  }
+
+  // Every tag the member has put on this item's source shows as a reason
+  // (even at neutral weight), same treatment as the "From <source>" row -
+  // it's the only way to make the *first* more/less click on a tag.
+  const tags = ctx.sourceTags[item.sourceId] ?? [];
+  for (const tag of tags) {
+    const tagWeight = ctx.tagAffinity[tag] ?? 0;
+    score += tagWeight;
+    reasons.push({
+      factor: "tag_affinity",
+      contribution: tagWeight,
+      tag,
+      label:
+        tagWeight > 0
+          ? `You've asked for more tagged "${tag}"`
+          : tagWeight < 0
+            ? `You've asked for less tagged "${tag}"`
+            : `Tagged "${tag}"`,
     });
   }
 

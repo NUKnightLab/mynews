@@ -2,24 +2,27 @@
 
 import { adjustReason } from "./actions";
 
-// Sits immediately to the left of the reason/source label it acts on (not
-// flush right on the row) - the spatial closeness is what makes "which
-// reason does this affect" obvious at a glance.
+// Sits immediately to the left of the reason/source/tag label it acts on
+// (not flush right on the row) - the spatial closeness is what makes
+// "which reason does this affect" obvious at a glance.
 export function MoreLessButtons({
   factor,
   label,
   sourceId,
+  tag,
 }: {
   factor: string;
   label: string;
-  sourceId: string;
+  sourceId?: string;
+  tag?: string;
 }) {
   return (
     <span className="flex shrink-0 gap-1">
       <form action={adjustReason}>
         <input type="hidden" name="factor" value={factor} />
         <input type="hidden" name="direction" value="more" />
-        <input type="hidden" name="sourceId" value={sourceId} />
+        {sourceId && <input type="hidden" name="sourceId" value={sourceId} />}
+        {tag && <input type="hidden" name="tag" value={tag} />}
         <button
           type="submit"
           aria-label={`More like this: ${label}`}
@@ -31,7 +34,8 @@ export function MoreLessButtons({
       <form action={adjustReason}>
         <input type="hidden" name="factor" value={factor} />
         <input type="hidden" name="direction" value="less" />
-        <input type="hidden" name="sourceId" value={sourceId} />
+        {sourceId && <input type="hidden" name="sourceId" value={sourceId} />}
+        {tag && <input type="hidden" name="tag" value={tag} />}
         <button
           type="submit"
           aria-label={`Less like this: ${label}`}

@@ -5,7 +5,13 @@ import type { ScoredItem, ScoreReason } from "@/lib/ranking/score";
 import { MoreLessButtons } from "./more-less-buttons";
 
 // source_diversity deliberately excluded - see src/lib/ranking/weights.ts.
-const ACTIONABLE_FACTORS = new Set(["recency", "corroboration", "popularity", "source_affinity"]);
+const ACTIONABLE_FACTORS = new Set([
+  "recency",
+  "corroboration",
+  "popularity",
+  "source_affinity",
+  "tag_affinity",
+]);
 
 export function ItemCard({ scored }: { scored: ScoredItem }) {
   const [expanded, setExpanded] = useState(false);
@@ -48,12 +54,13 @@ export function ItemCard({ scored }: { scored: ScoredItem }) {
       {expanded && (
         <ul className="mt-2 flex flex-col gap-2 rounded border border-gray-200 p-3 text-xs">
           {otherReasons.map((reason) => (
-            <li key={reason.factor} className="flex items-center gap-2">
+            <li key={reason.tag ?? reason.factor} className="flex items-center gap-2">
               {ACTIONABLE_FACTORS.has(reason.factor) && (
                 <MoreLessButtons
                   factor={reason.factor}
                   label={reason.label}
                   sourceId={item.sourceId}
+                  tag={reason.tag}
                 />
               )}
               <span>{reason.label}</span>

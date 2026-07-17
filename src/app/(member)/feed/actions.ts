@@ -3,7 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth";
-import { nudgeWeight, nudgeAffinity, NUDGE_INCREMENT, type WeightFactor } from "@/lib/ranking/weights";
+import {
+  nudgeWeight,
+  nudgeAffinity,
+  nudgeTagWeight,
+  NUDGE_INCREMENT,
+  type WeightFactor,
+} from "@/lib/ranking/weights";
 
 const WEIGHT_FACTORS: WeightFactor[] = ["recency", "corroboration", "popularity"];
 
@@ -18,6 +24,7 @@ export async function adjustReason(formData: FormData) {
   const factor = String(formData.get("factor") ?? "");
   const direction = formData.get("direction") === "less" ? -1 : 1;
   const sourceId = String(formData.get("sourceId") ?? "");
+  const tag = String(formData.get("tag") ?? "");
   const delta = direction * NUDGE_INCREMENT;
 
   const supabase = await createClient();
@@ -26,7 +33,10 @@ export async function adjustReason(formData: FormData) {
     await nudgeWeight(supabase, profile.id, factor as WeightFactor, delta);
   } else if (factor === "source_affinity" && sourceId) {
     await nudgeAffinity(supabase, profile.id, sourceId, delta);
+  } else if (factor === "tag_affinity" && tag) {
+    await nudgeTagWeight(supabase, profile.id, tag, delta);
   }
 
   revalidatePath("/feed");
+  revalidatePath("/feed/settings");
 }

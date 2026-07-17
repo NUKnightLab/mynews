@@ -58,6 +58,13 @@ something runnable/testable before moving on.
   Phase 4 output shape, strip provenance/weight detail before rendering to
   a non-owner.
 
+## Phase 6.5 — First deployment milestone
+- Add autosuggest for existing tags to the tagging box
+- move "Remove" from the /feed/sources view to the left of the source instead of right justified; change it to a red X or trash-can with a two-click confirm; hide the feed URL
+- Get it in GitHub
+- Get it up on Vercel for collaborators to use
+- make it clear how collaborators can run locally, including how we deal with multiple databases and auth redirect URLs
+
 ## Phase 7 — Survey Module (architecturally separate from Phases 2–6)
 - Own data domain: `instruments`, `questions`, `assignments`, `responses`,
   keyed by each member's pseudonymous ID (§7) rather than their identity
