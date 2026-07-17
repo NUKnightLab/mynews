@@ -23,7 +23,7 @@ When the system would send email, those email messages end up in another locally
 
 ```bash
 git clone <this repo>
-cd rss-filter
+cd mynews
 npm install
 cp .env.local.example .env.local   # local-stack defaults, already filled in
 supabase start                      # first run pulls Docker images, takes a few minutes
