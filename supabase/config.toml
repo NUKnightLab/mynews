@@ -434,9 +434,9 @@ enabled = true
 # development" for why local dev intentionally does NOT use these.
 [remotes.production]
 project_id = "gylabdytdfxntrffcnfg"
-site_url = "https://mynews.knightlab.com"
 
 [remotes.production.auth]
+site_url = "https://mynews.knightlab.com"
 additional_redirect_urls = ["https://mynews.knightlab.com/**"]
 
 # Gmail SMTP relay (see README.md "Email setup"). Any email account works
