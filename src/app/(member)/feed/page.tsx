@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth";
 import { rankForMember } from "@/lib/ranking/rank-for-member";
 import { ItemCard } from "./item-card";
+import { RefreshButton } from "./refresh-button";
 
 export default async function FeedPage() {
   const profile = await getCurrentProfile();
@@ -12,12 +13,16 @@ export default async function FeedPage() {
 
   return (
     <main className="flex flex-1 flex-col gap-4 p-8">
-      <div>
-        <h1 className="text-xl font-semibold">Your Feed</h1>
-        <p className="text-sm text-gray-500">
-          Ranked from your subscribed sources. Expand &ldquo;why am I seeing
-          this&rdquo; on any item to see more or less of a specific reason.
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-semibold">Your Feed</h1>
+          <p className="text-sm text-gray-500">
+            Ranked from your subscribed sources. Expand &ldquo;why am I
+            seeing this&rdquo; on any item to see more or less of a
+            specific reason.
+          </p>
+        </div>
+        <RefreshButton />
       </div>
 
       {ranked.length === 0 ? (

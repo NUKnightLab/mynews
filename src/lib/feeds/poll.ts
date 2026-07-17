@@ -15,14 +15,37 @@ export type PollResult = {
 
 export async function pollAllSources(): Promise<PollResult[]> {
   const admin = createAdminClient();
-  const { data: sources } = await admin.from("sources").select("*");
+  const { data: sources } = await admin.from("sources").select("id");
   if (!sources) return [];
+  return pollSources(sources.map((s) => s.id));
+}
 
-  const results: PollResult[] = [];
-  for (const source of sources) {
-    results.push(await pollSource(admin, source));
-  }
-  return results;
+// Polls a specific subset of sources in parallel (not sequentially - a
+// member's manual refresh shouldn't wait on N feeds one at a time, and
+// each fetch already has its own timeout via fetchFeed). Used by both the
+// cron job (pollAllSources, above) and member-triggered refreshes
+// (see src/app/(member)/feed/actions.ts).
+export async function pollSources(sourceIds: string[]): Promise<PollResult[]> {
+  if (sourceIds.length === 0) return [];
+  const admin = createAdminClient();
+  const { data: sources } = await admin.from("sources").select("*").in("id", sourceIds);
+  if (!sources) return [];
+  return Promise.all(sources.map((source) => pollSource(admin, source)));
+}
+
+const MANUAL_POLL_COOLDOWN_MINUTES = 3;
+
+// Shared abuse guard for anything that lets a member trigger a poll
+// on-demand (manual refresh, auto-poll-on-add): skip sources polled too
+// recently, regardless of who's asking or how many times. Cheap and
+// reuses a column we already have - no new schema, no per-member
+// counters, and it protects the external feed server (the thing actually
+// at risk from repeated hammering) rather than just rate-limiting our
+// own endpoint.
+export function isEligibleForManualPoll(lastPolledAt: string | null): boolean {
+  if (!lastPolledAt) return true;
+  const elapsedMs = Date.now() - new Date(lastPolledAt).getTime();
+  return elapsedMs >= MANUAL_POLL_COOLDOWN_MINUTES * 60_000;
 }
 
 async function pollSource(admin: AdminClient, source: Source): Promise<PollResult> {

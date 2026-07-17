@@ -22,10 +22,13 @@ export function FeedForm() {
       className="flex max-w-sm flex-col gap-3"
     >
       <input
-        type="url"
+        // Not type="url": that enforces a scheme via native browser
+        // validation, which would block a bare domain like "example.com"
+        // before it ever reaches addFeed's own scheme-fallback handling.
+        type="text"
         name="url"
         required
-        placeholder="https://example.com/feed.xml"
+        placeholder="example.com/feed.xml"
         className="rounded border border-gray-300 px-3 py-2 text-sm"
       />
       <button
