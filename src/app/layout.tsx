@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "RSS Filter",
+  title: "mynews",
   description: "A small-cohort, configurable RSS reader.",
 };
 

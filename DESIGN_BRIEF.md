@@ -1,4 +1,4 @@
-# Design Brief: RSS Filter (working title)
+# Design Brief: mynews (working title)
 
 Status: FINAL v1
 Date: 2026-07-14

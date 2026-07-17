@@ -1,4 +1,4 @@
-# Project Plan: RSS Filter
+# Project Plan: mynews
 
 Based on [DESIGN_BRIEF.md](./DESIGN_BRIEF.md) (Final v1). Phases are ordered
 by dependency, not necessarily by calendar time — each phase produces

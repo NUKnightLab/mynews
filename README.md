@@ -1,4 +1,4 @@
-# RSS Filter
+# mynews
 
 A small-cohort, configurable RSS reader. See [DESIGN_BRIEF.md](./DESIGN_BRIEF.md)
 for the product spec and [PROJECT_PLAN.md](./PROJECT_PLAN.md) for the phased
@@ -121,7 +121,7 @@ Gmail account works:
 1. Enable 2-Step Verification on the Google account you'll send from, if
    it isn't already.
 2. Generate an [App Password](https://myaccount.google.com/apppasswords)
-   (name it e.g. "RSS Filter").
+   (name it e.g. "mynews").
 3. Export both values in your shell before running `supabase config push`
    (do **not** put these in any `.env*` file - they're consumed by the
    CLI, not the Next.js app):

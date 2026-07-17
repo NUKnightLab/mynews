@@ -254,11 +254,11 @@ enabled = false
 # Microsoft Defender Safe Links), which otherwise burn a single-use
 # magic-link/invite token before the recipient ever clicks it.
 [auth.email.template.invite]
-subject = "You've been invited to RSS Filter"
+subject = "You've been invited to mynews"
 content_path = "./supabase/templates/invite.html"
 
 [auth.email.template.magic_link]
-subject = "Sign in to RSS Filter"
+subject = "Sign in to mynews"
 content_path = "./supabase/templates/magic-link.html"
 
 # Uncomment to customize notification email template
@@ -433,7 +433,11 @@ enabled = true
 # two separate config files. See AGENTS.md and README.md "Local
 # development" for why local dev intentionally does NOT use these.
 [remotes.production]
-project_id = "gftmswtvdzhfwrpuxiwn"
+project_id = "gylabdytdfxntrffcnfg"
+site_url = "https://mynews.knightlab.com"
+
+[remotes.production.auth]
+additional_redirect_urls = ["https://mynews.knightlab.com/**"]
 
 # Gmail SMTP relay (see README.md "Email setup"). Any email account works
 # here - a custom domain is not required, just an App Password. This also
@@ -448,4 +452,4 @@ port = 587
 user = "env(GMAIL_SMTP_USER)"
 pass = "env(GMAIL_SMTP_APP_PASSWORD)"
 admin_email = "env(GMAIL_SMTP_USER)"
-sender_name = "RSS Filter"
+sender_name = "mynews"
