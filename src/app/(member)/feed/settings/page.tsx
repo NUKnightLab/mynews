@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth";
 import { WeightsForm } from "./weights-form";
+import { DisplayNameForm } from "./display-name-form";
 import { MoreLessButtons } from "../more-less-buttons";
 
 export default async function SettingsPage() {
@@ -32,6 +33,16 @@ export default async function SettingsPage() {
           see here.
         </p>
       </div>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-lg font-medium">Profile</h2>
+        <p className="text-sm text-gray-500">
+          Shown to other members (cross-member view, roster). Admin-issued
+          invites via the Supabase dashboard don&apos;t collect this, so it
+          defaults to the email&apos;s username - change it here any time.
+        </p>
+        <DisplayNameForm initialValue={profile.display_name} />
+      </section>
 
       <section className="flex flex-col gap-3">
         <h2 className="text-lg font-medium">Ranking weights</h2>

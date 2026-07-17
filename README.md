@@ -8,8 +8,9 @@ build plan.
 
 Local dev runs against a **local Supabase stack** (Postgres + Auth + REST,
 all in Docker via `supabase start`) - not the hosted production project.
-This is the real equivalent of "run Postgres locally": fully isolated per
-machine, no coordination with anyone else, no Supabase account needed.
+This is fully isolated per machine, no coordination with anyone else, no Supabase account needed. 
+
+When the system would send email, those email messages end up in another locally-running webapp, so that you can test as multiple users without needing many email accounts.
 
 ### Prerequisites
 
@@ -47,9 +48,8 @@ Since invites are always admin-issued (even the first one), and there's no
 admin yet on a fresh local database:
 
 1. Open Supabase Studio (`STUDIO_URL` from the `start` output, normally
-   `http://127.0.0.1:54323`) → **Authentication → Users → Invite user** →
-   enter your own email. The database trigger makes the **first person
-   ever invited** an admin automatically.
+   `http://127.0.0.1:54323`) → **Authentication → Users → Add user → Send Invitation** → 
+   enter your own email. (if you're having trouble finding **Authentication**, hover your mouse over the icon bar at the left of the browser.) The database trigger makes the **first person ever invited** an admin automatically. **Note: This does not actually send an email to your inbox, read on...**
 2. Open Mailpit (`MAILPIT_URL`, normally `http://127.0.0.1:54324`) and
    find **that** invite - Mailpit keeps every message it has ever
    captured, so if you (or anyone) has tested this before, older invite
