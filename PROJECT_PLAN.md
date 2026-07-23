@@ -94,6 +94,20 @@ something runnable/testable before moving on.
 - Deploy checklist: Supabase prod project, Vercel env vars, cron schedule
   confirmed live.
 
+## Future Direction (Not Scheduled) — Per-Item Semantic Tagging
+
+Rationale in [DESIGN_BRIEF.md §11](./DESIGN_BRIEF.md#11-potential-future-path-per-item-semantic-tagging-exploratory-not-scheduled).
+Exploratory only, not assigned to a phase; revisit once Phase 4 (Ranking)
+and Phase 5 (Reading UI) are stable, since it plugs into both as a new
+factor rather than needing new UI.
+
+Technical approach under consideration: tag at poll time (in
+`pollSource`), using a small local embedding model (e.g. transformers.js
++ a quantized MiniLM-class model) run in-process — no external API, no
+new hosting. Embed a fixed set of tag descriptions once; embed each
+item's title+summary; assign tags via cosine similarity above a tuned
+threshold.
+
 ---
 
 **Suggested build order for the first working slice**: Phases 0–5 get you a

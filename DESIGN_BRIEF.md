@@ -56,7 +56,9 @@ since that status could change without requiring a rebuild.
   groups — "more of this / less of that"), not exposed numeric parameters.
 - Inputs are metadata-only: title, summary, source, date, link, and
   user-applied tags. No full-article-text fetching, no paid LLM or
-  embedding calls — the engine stays rule-based and cheap to run.
+  embedding calls — the engine stays rule-based and cheap to run. (See
+  §11 for a potential future evolution that stays within the no-fetch
+  constraint.)
 - Candidate weighting dimensions:
   - Recency
   - Source diversity (prevents one prolific feed from dominating)
@@ -166,7 +168,25 @@ what's collected, who sees it, and how it's used.
 - Multi-admin / multi-group partitioning (data model allows for it; not
   built).
 - Non-RSS feed source types (ingestion layer allows for it; not built).
-- Story-clustering NLP / any paid LLM or embedding calls.
+- Story-clustering NLP / any paid LLM or embedding calls. (Concern is
+  external API cost/complexity, not embeddings in general — see §11.)
 - Browsable subscription lists for other members (dropped — see §6).
 - Member-side survey/diary response history.
 - Public-facing/unauthenticated access — closed, invite-only tool.
+
+## 11. Potential Future Path: Per-Item Semantic Tagging (exploratory, not scheduled)
+
+Not part of v1; recorded for later consideration, once §4/§5 are built and
+stable. Technical approach lives in PROJECT_PLAN.md.
+
+- Today's tags are member-applied to an entire source. Per-item tags,
+  generated automatically from each story, would let a member tune the
+  feed on actual story-level topics instead of a coarse guess about what
+  a whole feed covers.
+- Stays within the no-fetch constraint (§4) — uses only metadata already
+  stored per item, no full-article text.
+- Would surface through the existing §5 "why am I seeing this" /
+  more-less mechanism as another named factor, not a new UI paradigm.
+- Open question: how a member flags a tag as wrong on a given item, and
+  whether that just hides the one association or also shapes future
+  tagging.
