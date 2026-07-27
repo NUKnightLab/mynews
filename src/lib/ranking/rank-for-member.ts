@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
-import { rankItems, type MemberWeights, type RankableItem, type ScoredItem } from "./score";
+import { capFeed, rankItems, type MemberWeights, type RankableItem, type ScoredItem } from "./score";
 
 const DEFAULT_WEIGHTS: MemberWeights = {
   recency: 1,
@@ -88,13 +88,15 @@ export async function rankForMember(
 
   const tagAffinity = Object.fromEntries((tagWeightRows ?? []).map((row) => [row.tag, row.weight]));
 
-  return rankItems(items, {
-    now: new Date(),
-    weights,
-    sourceAffinity,
-    subscriberCountBySource,
-    groupMemberCount,
-    sourceTags,
-    tagAffinity,
-  });
+  return capFeed(
+    rankItems(items, {
+      now: new Date(),
+      weights,
+      sourceAffinity,
+      subscriberCountBySource,
+      groupMemberCount,
+      sourceTags,
+      tagAffinity,
+    }),
+  );
 }

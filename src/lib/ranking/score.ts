@@ -23,6 +23,10 @@ export type ScoreReason = {
 export type ScoredItem = {
   item: RankableItem;
   score: number;
+  // Same as `score` unless source-diversity spacing (§4) pushed this item
+  // down - see applyDiversityReranking. List order is by effectiveScore,
+  // not score, so display code should sort/cap on this field, not `score`.
+  effectiveScore: number;
   reasons: ScoreReason[];
 };
 
@@ -146,7 +150,7 @@ function scoreItem(
     });
   }
 
-  return { item, score, reasons };
+  return { item, score, effectiveScore: score, reasons };
 }
 
 // Greedy re-ranking pass: repeatedly pick the highest-scoring remaining
@@ -179,9 +183,11 @@ function applyDiversityReranking(
     sourceCounts.set(picked.item.sourceId, priorCount + 1);
 
     if (priorCount > 0 && diversityWeight > 0) {
+      const penalty = diversityWeight * DIVERSITY_PENALTY_UNIT * priorCount;
+      picked.effectiveScore = picked.score - penalty;
       picked.reasons.push({
         factor: "source_diversity",
-        contribution: -(diversityWeight * DIVERSITY_PENALTY_UNIT * priorCount),
+        contribution: -penalty,
         label: "Spaced out to keep your feed varied",
       });
     }
@@ -190,6 +196,35 @@ function applyDiversityReranking(
   }
 
   return output;
+}
+
+const TARGET_ITEMS = 12;
+const GRACE_SCORE_DELTA = 0.05;
+const MAX_GRACE_ITEMS = 15;
+
+// Ranking produces an ordering, not a length - without a cap "your feed"
+// just keeps growing as more items get polled in, with no natural end.
+// This is a deliberately simple first cut: a target count, extended a
+// little past the cutoff so a near-tie right at the edge doesn't get
+// split - either the whole cluster of similar scores makes it in, or none
+// of it does.
+export function capFeed(ranked: ScoredItem[], targetItems = TARGET_ITEMS): ScoredItem[] {
+  if (ranked.length <= targetItems) return ranked;
+
+  // Compare on effectiveScore, not score - that's the field the list is
+  // actually ordered by (source-diversity spacing can reorder items
+  // without changing their raw score), so it's the one that reflects how
+  // close an item is to the cutoff *as displayed*.
+  const cutoffScore = ranked[targetItems - 1].effectiveScore;
+  let end = targetItems;
+  while (
+    end < ranked.length &&
+    end < targetItems + MAX_GRACE_ITEMS &&
+    cutoffScore - ranked[end].effectiveScore <= GRACE_SCORE_DELTA
+  ) {
+    end++;
+  }
+  return ranked.slice(0, end);
 }
 
 function recencyScore(item: RankableItem, now: Date): number {

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { ScoredItem, ScoreReason } from "@/lib/ranking/score";
 import { MoreLessButtons } from "./more-less-buttons";
+import { ReasonContribution, ScoreBadges } from "./score-debug";
 
 // source_diversity deliberately excluded - see src/lib/ranking/weights.ts.
 const ACTIONABLE_FACTORS = new Set([
@@ -13,9 +14,9 @@ const ACTIONABLE_FACTORS = new Set([
   "tag_affinity",
 ]);
 
-export function ItemCard({ scored }: { scored: ScoredItem }) {
+export function ItemCard({ scored, rank }: { scored: ScoredItem; rank: number }) {
   const [expanded, setExpanded] = useState(false);
-  const { item, reasons } = scored;
+  const { item, reasons, score, effectiveScore } = scored;
 
   // The source row is always shown (below), so pull it out of the mapped
   // reasons - otherwise a member has no way to make the *first* "more from
@@ -26,21 +27,25 @@ export function ItemCard({ scored }: { scored: ScoredItem }) {
   const sourceLabel = item.sourceTitle ?? "this source";
 
   return (
-    <li className="flex flex-col gap-1 border-b border-gray-100 pb-4">
-      <a
-        href={item.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="font-medium hover:underline"
-      >
-        {item.title}
-      </a>
-      <div className="text-xs text-gray-500">
+    <li className="flex flex-col gap-1.5 border-b border-gray-100 pb-5">
+      <div className="flex items-start justify-between gap-2">
+        <a
+          href={item.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-base font-semibold leading-snug text-gray-900 hover:underline"
+        >
+          <span className="mr-1.5 text-gray-400">{rank}.</span>
+          {item.title}
+        </a>
+        <ScoreBadges score={score} effectiveScore={effectiveScore} />
+      </div>
+      <div className="text-[11px] font-medium uppercase tracking-wide text-gray-400">
         {item.sourceTitle ?? "Unknown source"}
         {item.publishedAt ? ` · ${new Date(item.publishedAt).toLocaleString()}` : ""}
       </div>
       {item.summary && (
-        <p className="line-clamp-2 text-sm text-gray-700">{item.summary}</p>
+        <p className="line-clamp-2 text-sm leading-relaxed text-gray-600">{item.summary}</p>
       )}
 
       <button
@@ -64,6 +69,7 @@ export function ItemCard({ scored }: { scored: ScoredItem }) {
                 />
               )}
               <span>{reason.label}</span>
+              <ReasonContribution contribution={reason.contribution} />
             </li>
           ))}
           <li className="flex items-center gap-2">
@@ -73,6 +79,7 @@ export function ItemCard({ scored }: { scored: ScoredItem }) {
               sourceId={item.sourceId}
             />
             <span>{sourceReason?.label ?? `From ${sourceLabel}`}</span>
+            <ReasonContribution contribution={sourceReason?.contribution ?? 0} />
           </li>
         </ul>
       )}

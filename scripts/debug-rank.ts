@@ -51,8 +51,9 @@ async function main() {
   const ranked = await rankForMember(userClient, profile.id);
 
   console.log(`Ranked feed for ${profile.display_name} (${ranked.length} items):\n`);
-  for (const { item, score, reasons } of ranked) {
-    console.log(`[${score.toFixed(2)}] ${item.title}`);
+  for (const { item, score, effectiveScore, reasons } of ranked) {
+    const effective = Math.abs(effectiveScore - score) > 0.005 ? ` (eff ${effectiveScore.toFixed(2)})` : "";
+    console.log(`[${score.toFixed(2)}${effective}] ${item.title}`);
     for (const reason of reasons) {
       const sign = reason.contribution >= 0 ? "+" : "";
       console.log(`    ${reason.factor}: ${sign}${reason.contribution.toFixed(2)} - ${reason.label}`);
